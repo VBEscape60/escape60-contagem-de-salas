@@ -161,7 +161,7 @@
   <div class="records">
     <div class="rec-card"><div class="rec-val">87</div><div class="rec-lbl">Diário</div><div class="rec-sub">HS · out/22</div></div>
     <div class="rec-card"><div class="rec-val">827</div><div class="rec-lbl">Semanal</div><div class="rec-sub">geral · abr/26</div></div>
-    <div class="rec-card"><div class="rec-val">3.0k</div><div class="rec-lbl">Mensal</div><div class="rec-sub">geral · ago/25</div></div>
+    <div class="rec-card"><div class="rec-val">3036</div><div class="rec-lbl">Mensal</div><div class="rec-sub">geral · ago/25</div></div>
   </div>
 
   <div class="sec">Metas Mensais · <span id="ano-metas">2026</span></div>
@@ -320,9 +320,9 @@ function render(idx){
       </tr>`;
   });
 
-  const tPct = (tA/tMm*100).toFixed(1);
-  const tTotClass  = tS >= tMs ? 'hit' : 'mis';
-  const tAcumClass = tA >= metaProporcional(tMm, m) ? 'hit' : 'mis';
+  const tPct = tMm > 0 ? (tA/tMm*100).toFixed(1) : '0.0';
+  const tTotClass  = tMs > 0 ? (tS >= tMs ? 'hit' : 'mis') : '';
+  const tAcumClass = tMm > 0 ? (tA >= metaProporcional(tMm, m) ? 'hit' : 'mis') : '';
   const dc = daySums.map(v=>`<td style="font-family:'DM Mono',monospace;font-size:.73rem;text-align:center;color:var(--muted)">${v}</td>`).join('');
   tbody.innerHTML += `
     <tr class="r-s" style="border-top:1px solid rgba(255,255,255,.15)">
