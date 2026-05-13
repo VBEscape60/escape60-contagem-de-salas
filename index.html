@@ -568,8 +568,13 @@ async function fetchFreshData() {
 
   } catch(err) {
     console.error('fetchFreshData:', err);
-    dataSourceEl.textContent = `dados locais · erro: ${err.message}`;
+    const msg = err?.message || err?.errorCode || err?.name || JSON.stringify(err) || 'desconhecido';
+    dataSourceEl.textContent = `erro: ${msg}`;
     dataSourceEl.style.color = 'var(--down)';
+    dataSourceEl.style.cursor = 'pointer';
+    dataSourceEl.title = JSON.stringify(err);
+    // Toque para ver detalhes
+    dataSourceEl.onclick = () => alert('Erro detalhado:\n' + JSON.stringify(err, null, 2));
   }
 }
 
