@@ -309,10 +309,14 @@ function render(idx){
   b2+=`<tr class="tr-pct"><td class="hm-pct-lbl">% ano</td>`;
   UNIT_CFG.forEach(u=>{
     const p=PCT_ANO[u.code]||0;
-    b2+=`<td class="hm-td-pct"><span class="pv ${pvClass(p)}">${p}%</span><br><span style="font-size:.55rem;color:var(--muted);font-weight:600">${u.code}</span></td>`;
+    const falta=Math.max(0,100-p).toFixed(1);
+    const cls=p>=80?'ok':p>=50?'mid':'low';
+    b2+=`<td class="hm-td-pct"><span class="pv ${cls}">${falta}%</span><br><span style="font-size:.5rem;color:var(--muted);font-weight:600">falta</span><br><span style="font-size:.55rem;color:var(--muted);font-weight:600">${u.code}</span></td>`;
   });
   const pg=Object.values(PCT_ANO).reduce((a,v)=>a+v,0)/6;
-  b2+=`<td class="hm-td-pct-g"><span class="pv ${pvClass(pg.toFixed(1))}">${pg.toFixed(1)}%</span><br><span style="font-size:.55rem;color:var(--muted);font-weight:600">Geral</span></td>`;
+  const pgFalta=Math.max(0,100-pg).toFixed(1);
+  const pgCls=pg>=80?'ok':pg>=50?'mid':'low';
+  b2+=`<td class="hm-td-pct-g"><span class="pv ${pgCls}">${pgFalta}%</span><br><span style="font-size:.5rem;color:var(--muted);font-weight:600">falta</span><br><span style="font-size:.55rem;color:var(--muted);font-weight:600">Geral</span></td>`;
   b2+='</tr></tbody>';
   hm.innerHTML=h+b2;
 
@@ -479,11 +483,13 @@ async function fetchFreshData(){
     Object.entries(unitFatCols).forEach(([u,c])=>{
       let fatAcum=0,metaAno=0;
       for(let i=0;i<12;i++){
-        const fv=parseFloat(v[55+i]?.[c]||0); if(fv>0) fatAcum+=fv;
-        const mv=parseFloat(v[69+i]?.[c]||0); if(mv>0) metaAno+=mv;
+        const fv=parseFloat(v[55+i]?.[c])||0; if(fv>0) fatAcum+=fv;
+        const mv=parseFloat(v[69+i]?.[c])||0; if(mv>0) metaAno+=mv;
       }
+      // % atingido do ano
       newPct[u]=metaAno>0?Math.round(fatAcum/metaAno*1000)/10:0;
     });
+    console.log('PCT_ANO atualizado:', newPct);
     Object.assign(PCT_ANO,newPct);
     
     // Merge: só atualiza semanas com dados válidos, mantém estáticos para o resto
