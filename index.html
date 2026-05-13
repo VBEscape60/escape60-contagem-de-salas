@@ -428,28 +428,152 @@ if(currentIdx<0) currentIdx = window.WEEKS_IDS.length-1;
 document.getElementById('loading-overlay').style.display='none';
 render(currentIdx);
 
-// Se estiver em HTTPS, tenta buscar dados frescos do SharePoint em background
-if(window.location.protocol==='https:') {
-  setTimeout(async ()=>{
-    try {
-      const s=document.createElement('script');
-      s.src='https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js';
-      await new Promise((res,rej)=>{s.onload=res;s.onerror=rej;document.head.appendChild(s);});
-      const app = new msal.PublicClientApplication({
-        auth:{clientId:CLIENT_ID,authority:`https://login.microsoftonline.com/${TENANT_ID}`,redirectUri:window.location.origin+window.location.pathname},
-        cache:{cacheLocation:'localStorage',storeAuthStateInCookie:true}
+// Indicador de fonte dos dados
+const dataSourceEl = document.createElement('div');
+dataSourceEl.id = 'data-source';
+dataSourceEl.style.cssText = 'text-align:center;font-size:.58rem;color:var(--muted);font-family:"DM Mono",monospace;margin-top:8px;';
+dataSourceEl.textContent = 'dados: planilha local';
+document.getElementById('footer').parentNode.insertBefore(dataSourceEl, document.getElementById('footer'));
+
+// Busca dados frescos do SharePoint ao abrir
+async function fetchFreshData() {
+  if(window.location.protocol !== 'https:') return;
+  try {
+    const s = document.createElement('script');
+    s.src = 'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js';
+    await new Promise((res,rej)=>{s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+
+    const app = new msal.PublicClientApplication({
+      auth:{
+        clientId: CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${TENANT_ID}`,
+        redirectUri: window.location.origin + window.location.pathname
+      },
+      cache:{cacheLocation:'localStorage',storeAuthStateInCookie:true}
+    });
+    await app.initialize();
+    await app.handleRedirectPromise();
+
+    let accounts = app.getAllAccounts();
+    if(accounts.length === 0) {
+      dataSourceEl.textContent = 'toque aqui para atualizar dados';
+      dataSourceEl.style.cursor = 'pointer';
+      dataSourceEl.style.color = '#FFD166';
+      dataSourceEl.onclick = async () => {
+        dataSourceEl.textContent = 'entrando...';
+        await app.loginPopup({scopes: SCOPES});
+        fetchFreshData();
+      };
+      return;
+    }
+
+    dataSourceEl.textContent = 'atualizando dados...';
+    dataSourceEl.style.color = '#FFD166';
+
+    const tokenRes = await app.acquireTokenSilent({scopes: SCOPES, account: accounts[0]});
+    const token = tokenRes.accessToken;
+
+    // Busca o driveItem da planilha
+    const fileRes = await fetch(`https://graph.microsoft.com/v1.0/shares/${SHARE_ID}/driveItem`, {
+      headers: {Authorization: `Bearer ${token}`}
+    });
+    if(!fileRes.ok) throw new Error(`driveItem: ${fileRes.status}`);
+    const fileData = await fileRes.json();
+    const driveId = fileData.parentReference.driveId;
+    const itemId  = fileData.id;
+
+    const units = ['HS','VO','MO','TT','JD','CP'];
+    const metaFixa = {HS:802,VO:408,MO:507,TT:350,JD:348,CP:239};
+    const allData = {};
+
+    for(const code of units) {
+      const sheetName = `BD - ${code}`;
+      const url = `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/workbook/worksheets('${sheetName}')/usedRange`;
+      const res = await fetch(url, {headers:{Authorization:`Bearer ${token}`}});
+      if(!res.ok) continue;
+      const data = await res.json();
+      const rows = data.values.slice(3); // pula cabeçalho
+
+      // Agrupa por Semana_ID (col 6)
+      const bySem = {};
+      rows.forEach(r => {
+        if(r[0] !== code) return;
+        const sid = parseInt(r[6]);
+        if(!sid || isNaN(sid)) return;
+        if(!bySem[sid]) bySem[sid] = [];
+        bySem[sid].push(r);
       });
-      await app.initialize();
-      await app.handleRedirectPromise();
-      const accounts=app.getAllAccounts();
-      if(accounts.length===0) return; // não força login em background
-      const tokenRes=await app.acquireTokenSilent({scopes:SCOPES,account:accounts[0]});
-      const token=tokenRes.accessToken;
-      // TODO: parsear planilha e atualizar window.WEEKS_IDS/WEEKS_DATA
-      console.log('Graph API token obtido, dados frescos disponíveis');
-    } catch(e){console.log('Graph background update:', e.message);}
-  }, 1000);
+
+      Object.entries(bySem).forEach(([sid, semRows]) => {
+        const s = Array(7).fill(0);
+        const c = Array(7).fill(0);
+        semRows.forEach((r,i) => { if(i<7){s[i]=parseInt(r[3])||0; c[i]=parseInt(r[4])||0;} });
+
+        // Converte serial Excel para data
+        const toDate = serial => {
+          const d = new Date(1899,11,30);
+          d.setDate(d.getDate() + parseInt(serial));
+          return d;
+        };
+        const dataIni = toDate(semRows[0][1]);
+        const dataFim = toDate(semRows[semRows.length-1][1]);
+        const mes = dataIni.getMonth();
+        const ano = dataIni.getFullYear();
+        const diasMes = new Date(ano, mes+1, 0).getDate();
+        const mm = metaFixa[code];
+        const ms = Math.round(mm/diasMes*7*10)/10;
+
+        // Acumulado do mês
+        const acum  = rows.filter(r => { const d=toDate(r[1]); return r[0]===code && d.getFullYear()===ano && d.getMonth()===mes && d<=dataFim; }).reduce((a,r)=>a+(parseInt(r[3])||0),0);
+        const acumC = rows.filter(r => { const d=toDate(r[1]); return r[0]===code && d.getFullYear()===ano && d.getMonth()===mes && d<=dataFim; }).reduce((a,r)=>a+(parseInt(r[4])||0),0);
+
+        // Ano anterior
+        const sidAnt = parseInt(String(sid).slice(0,4)-1 + String(sid).slice(4));
+        const ant = rows.filter(r=>parseInt(r[6])===sidAnt && r[0]===code).reduce((a,r)=>a+(parseInt(r[3])||0),0);
+
+        const fmt = d => d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+        const mesNomes = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+        if(!allData[sid]) allData[sid] = {_meta:{ini:fmt(dataIni),fim:fmt(dataFim),mes:mesNomes[mes],ano,sid:parseInt(sid)}};
+        allData[sid][code] = {s,c,tot:s.reduce((a,b)=>a+b,0),tot_c:c.reduce((a,b)=>a+b,0),acum,acum_c:acumC,ms,mm,pct:Math.round(acum/mm*1000)/10,ant};
+      });
+    }
+
+    // Atualiza dados globais
+    const validas = Object.keys(allData).map(Number).filter(sid => units.some(c => allData[sid][c]?.tot > 0)).sort((a,b)=>a-b);
+    if(validas.length > 0) {
+      window.WEEKS_IDS  = validas;
+      window.WEEKS_DATA = {};
+      validas.forEach(sid => { window.WEEKS_DATA[String(sid)] = allData[sid]; });
+
+      // Recalcula semana atual
+      const tSid = getSemanaId(new Date());
+      if(!window.WEEKS_IDS.includes(tSid)) {
+        window.WEEKS_IDS = [...window.WEEKS_IDS, tSid].sort((a,b)=>a-b);
+        const now=new Date(); const dow=now.getDay(); const diff=dow===0?-6:1-dow;
+        const seg=new Date(now); seg.setDate(now.getDate()+diff);
+        const dom=new Date(seg); dom.setDate(seg.getDate()+6);
+        const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+        const mes=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][seg.getMonth()];
+        window.WEEKS_DATA[String(tSid)]={_meta:{ini:fmt(seg),fim:fmt(dom),mes,ano:seg.getFullYear(),sid:tSid}};
+      }
+      currentIdx = window.WEEKS_IDS.indexOf(tSid);
+      if(currentIdx<0) currentIdx = window.WEEKS_IDS.length-1;
+      render(currentIdx);
+
+      const now = new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      dataSourceEl.textContent = `SharePoint · atualizado ${now}`;
+      dataSourceEl.style.color = 'var(--up)';
+    }
+
+  } catch(err) {
+    console.error('fetchFreshData:', err);
+    dataSourceEl.textContent = `dados locais · erro: ${err.message}`;
+    dataSourceEl.style.color = 'var(--down)';
+  }
 }
+
+fetchFreshData();
 </script>
 </body>
 </html>
