@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste API</title>
+<style>
+  body { background:#0A0A0F; color:#fff; font-family:monospace; padding:24px; }
+  button { background:#FF6B35; border:none; color:#fff; padding:12px 24px; border-radius:8px; font-size:1rem; cursor:pointer; margin-top:16px; }
+  #result { margin-top:20px; padding:16px; background:#13131A; border-radius:8px; font-size:.9rem; line-height:1.6; }
+</style>
+</head>
+<body>
+<h2 style="margin-bottom:8px">Escape60 · Teste API</h2>
+<p style="color:#666;font-size:.8rem">Busca apenas as últimas 10 linhas da aba BD - HS</p>
+<button onclick="testar()">Testar conexão</button>
+<div id="result">Aguardando...</div>
+
+<script>
+const CLIENT_ID = '5316ae6b-b5b0-4d3c-8d01-207aa3a052d4';
+const TENANT_ID = '8c401f2f-30a2-4159-9e83-b7a9d2bbcee0';
+const SHARE_ID  = 'u!aHR0cHM6Ly9lc2NhcGVzZXNzZW50YS5zaGFyZXBvaW50LmNvbS86eDovcy9MaWRlcmFuYUVzY2FwZTYwJy9JUUFINFEtcmxUaURUWnplZVJZLWhJTEFBYjlCYWlEM01aRHNJMGwtcGJsS2luST9lPTU4bFRpSw';
+const SCOPES    = 'Files.Read Sites.Read.All User.Read';
+const TOKEN_KEY = 'e60_test_token';
+const TOKEN_EXP = 'e60_test_exp';
+
+const log = msg => {
+  document.getElementById('result').innerHTML += msg + '<br>';
+  console.log(msg);
+};
+
+function getToken() {
+  const t = localStorage.getItem(TOKEN_KEY);
+  const e = parseInt(localStorage.getItem(TOKEN_EXP)||'0');
+  return (t && Date.now() < e) ? t : null;
+}
+
+function login() {
+  const redirect = encodeURIComponent(window.location.href.split('#')[0]);
+  const scope    = encodeURIComponent(SCOPES);
+  window.location.href = `https://login.microsoftonline.com/${TENANT_ID}/oauth2/v2.0/authorize`
+    + `?client_id=${CLIENT_ID}&response_type=token`
+    + `&redirect_uri=${redirect}&scope=${scope}&response_mode=fragment`;
+}
+
+function captureToken() {
+  const hash = window.location.hash.substring(1);
+  if(!hash) return false;
+  const p = new URLSearchParams(hash);
+  const t = p.get('access_token');
+  if(t) {
+    localStorage.setItem(TOKEN_KEY, t);
+    localStorage.setItem(TOKEN_EXP, String(Date.now() + parseInt(p.get('expires_in')||'3600')*1000));
+    history.replaceState(null,'',window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+async function testar() {
+  document.getElementById('result').innerHTML = '';
+  captureToken();
+  
+  let token = getToken();
+  if(!token) { log('Sem token — redirecionando para login Microsoft...'); setTimeout(login, 1000); return; }
+  
+  log('✓ Token encontrado');
+  log('Buscando driveItem da planilha...');
+  
+  try {
+    // Step 1: resolve shared link
+    const r1 = await fetch(`https://graph.microsoft.com/v1.0/shares/${SHARE_ID}/driveItem`, {
+      headers: {Authorization: `Bearer ${token}`}
+    });
+    log(`driveItem status: ${r1.status}`);
+    if(!r1.ok) { log('ERRO: ' + await r1.text()); return; }
+    const d1 = await r1.json();
+    const driveId = d1.parentReference.driveId;
+    const itemId  = d1.id;
+    log(`✓ Drive: ${driveId.substring(0,20)}...`);
+    log(`✓ Item: ${itemId.substring(0,20)}...`);
+    
+    // Step 2: busca apenas últimas 10 linhas da HS (linhas 1873-1882)
+    log('Buscando linhas 1873-1882 de BD - HS...');
+    const range = encodeURIComponent('BD - HS!A1873:G1882');
+    const r2 = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/workbook/worksheets('BD - HS')/range(address='A1873:G1882')`,
+      { headers: {Authorization: `Bearer ${token}`} }
+    );
+    log(`range status: ${r2.status}`);
+    if(!r2.ok) { log('ERRO: ' + await r2.text()); return; }
+    const d2 = await r2.json();
+    log('✓ Dados recebidos!');
+    log('Linhas:');
+    (d2.values||[]).forEach(row => {
+      if(row[0]) log(`  ${row[1]} | ${row[2]} | salas: ${row[3]} | corp: ${row[4]}`);
+    });
+    log('<br><strong style="color:#3DD68C">✓ API FUNCIONANDO!</strong>');
+  } catch(e) {
+    log('ERRO: ' + e.message);
+  }
+}
+
+// Auto-captura token se voltou do login
+if(captureToken()) {
+  log('Login realizado! Clique em Testar.');
+}
+</script>
+</body>
+</html>
