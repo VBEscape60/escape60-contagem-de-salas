@@ -519,7 +519,8 @@ async function fetchFreshData() {
 
     for(const code of units) {
       const sheetName = `BD - ${code}`;
-      const url = `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/workbook/worksheets('${encodeURIComponent(sheetName)}')/usedRange`;
+      // Busca apenas as últimas 200 linhas (aprox 6 meses)
+      const url = `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/workbook/worksheets('${encodeURIComponent(sheetName)}')/range(address='A1:G100')`;
       const res = await fetch(url, {headers:{Authorization:`Bearer ${token}`}});
       if(!res.ok) continue;
       const data = await res.json();
