@@ -109,6 +109,7 @@
 
   footer{text-align:center;margin-top:28px;font-size:.58rem;color:var(--muted);font-family:'DM Mono',monospace;}
 </style>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
 </head>
 <body>
 
@@ -439,9 +440,7 @@ document.getElementById('footer').parentNode.insertBefore(dataSourceEl, document
 async function fetchFreshData() {
   if(window.location.protocol !== 'https:') return;
   try {
-    const s = document.createElement('script');
-    s.src = 'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js';
-    await new Promise((res,rej)=>{s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    if(typeof msal === 'undefined') throw new Error('MSAL não carregou - verifique conexão');
 
     const app = new msal.PublicClientApplication({
       auth:{
