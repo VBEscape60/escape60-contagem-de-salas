@@ -421,9 +421,17 @@ async function fetchFreshData(){
     // Bloco atual: linha 1=titulo, linha 2=datas(idx1), dados idx2
     // Bloco -7: linha 20=titulo+datas(idx19), dados idx20
     // Bloco -14: linha 37=titulo+datas(idx36), dados idx37
+    console.log('Total linhas:', v.length, 'Total cols:', v[0]?.length);
+    console.log('L2 (datas):', v[1]?.slice(0,12));
+    console.log('L3 (HS):', v[2]?.slice(0,12));
+    console.log('L20 (-7):', v[19]?.slice(0,12));
+    console.log('L37 (-14):', v[36]?.slice(0,12));
     const b0=parseRSBlock(v,1,2);
     const b1=parseRSBlock(v,19,20);
     const b2=parseRSBlock(v,36,37);
+    console.log('b0:', b0?.semId, b0?.result?.HS?.tot);
+    console.log('b1:', b1?.semId, b1?.result?.HS?.tot);
+    console.log('b2:', b2?.semId, b2?.result?.HS?.tot);
     
     const newIds=[],newData={};
     [b0,b1,b2].forEach(b=>{
@@ -478,11 +486,22 @@ async function fetchFreshData(){
     });
     Object.assign(PCT_ANO,newPct);
     
-    // Só atualiza se tiver dados válidos
-    const hasData=newIds.some(sid=>newData[String(sid)]&&Object.keys(newData[String(sid)]).length>1);
-    if(hasData){
-      window.WI=newIds;
-      window.WD=newData;
+    // Merge: só atualiza semanas com dados válidos, mantém estáticos para o resto
+    let updated=false;
+    newIds.forEach(sid=>{
+      const d=newData[String(sid)];
+      if(d && Object.keys(d).length>1){
+        // Verifica se tem pelo menos 1 unidade com tot>0
+        const hasUnits=['HS','VO','MO','TT','JD','CP'].some(u=>d[u]&&(d[u].tot>0||d[u].acum>0));
+        if(hasUnits||true){ // aceita mesmo sem dados (semana atual pode estar vazia)
+          window.WD[String(sid)]=d;
+          if(!window.WI.includes(sid)) window.WI.push(sid);
+          updated=true;
+        }
+      }
+    });
+    if(updated){
+      window.WI.sort((a,b)=>a-b);
       currentIdx=window.WI.indexOf(tSid);
       if(currentIdx<0) currentIdx=window.WI.length-1;
       render(currentIdx);
