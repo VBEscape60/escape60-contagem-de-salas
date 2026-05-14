@@ -354,17 +354,22 @@ function parseRSBlock(values, dateRow, dataRow){
   const dates=values[dateRow];
   function toDate(serial){
     if(!serial||isNaN(serial)) return null;
-    const d=new Date(Math.round((serial-25569)*86400*1000));
-    return d;
+    // Usa UTC para evitar problema de timezone (Brasília = UTC-3)
+    const ms=Math.round((serial-25569)*86400*1000);
+    const d=new Date(ms);
+    // Extrai data em UTC
+    const y=d.getUTCFullYear(),mo=d.getUTCMonth(),day=d.getUTCDate();
+    return new Date(y,mo,day); // cria como local sem conversão
   }
   const dataIni=toDate(dates[2]);
   const dataFim=toDate(dates[8]);
   if(!dataIni) return null;
   
-  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const fmt=d=>('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2);
   const mes=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][dataIni.getMonth()];
   const ano=dataIni.getFullYear();
-  const seg=new Date(dataIni); seg.setDate(dataIni.getDate()-((dataIni.getDay()||7)-1));
+  const dow=dataIni.getDay()||7; // 1=seg...7=dom
+  const seg=new Date(dataIni); seg.setDate(dataIni.getDate()-(dow-1));
   const jan1=new Date(seg.getFullYear(),0,1);
   const week=Math.ceil(((seg-jan1)/86400000+jan1.getDay()+1)/7);
   const semId=seg.getFullYear()*100+week;
