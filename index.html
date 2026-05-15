@@ -205,171 +205,6 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
 }
 .spin{width:40px;height:40px;border:3px solid rgba(0,0,0,.08);border-top-color:#E8500A;border-radius:50%;animation:spin .8s linear infinite;}
 #lm{font-size:.75rem;color:var(--muted);font-family:'Inter',sans-serif;letter-spacing:.5px;text-align:center;padding:0 32px;font-weight:500;}
-
-/* PATCH VISUAL - preserva tamanhos originais */
-.col-tot.hit,
-.col-acum.hit{
-  color:var(--up)!important;
-  background:var(--up-bg)!important;
-  border:1px solid rgba(22,163,74,.18)!important;
-  box-shadow:0 1px 4px rgba(22,163,74,.08)!important;
-}
-
-.col-tot.mis,
-.col-acum.mis{
-  color:var(--down)!important;
-  background:var(--down-bg)!important;
-  border:1px solid rgba(220,38,38,.15)!important;
-  box-shadow:0 1px 4px rgba(220,38,38,.08)!important;
-}
-
-.col-acum.hit,
-.col-acum.mis{
-  border-radius:8px;
-  padding:2px 6px!important;
-}
-
-.col-msem,
-.col-mmes{
-  font-variant-numeric:tabular-nums;
-}
-
-
-/* PATCH MOBILE FINAL - remove coluna % e compacta metas */
-table.week th:last-child,
-table.week td:last-child{
-  display:none!important;
-}
-
-/* Reduz um pouco a tabela, mantendo leitura no celular em pé */
-table.week thead tr.hg th{
-  font-size:.52rem!important;
-  letter-spacing:1.4px!important;
-  padding-left:3px!important;
-  padding-right:3px!important;
-}
-
-table.week thead tr.hd th{
-  font-size:.52rem!important;
-  padding-left:2px!important;
-  padding-right:2px!important;
-}
-
-.r-s td,.r-c td{
-  font-size:.72rem!important;
-  padding-left:2px!important;
-  padding-right:2px!important;
-}
-
-.r-s td:first-child{
-  padding-left:10px!important;
-}
-
-.r-c td:first-child{
-  padding-left:24px!important;
-}
-
-.unit-name{
-  font-size:.78rem!important;
-  gap:5px!important;
-}
-
-.dot{
-  width:7px!important;
-  height:7px!important;
-}
-
-.col-tot,
-.col-acum{
-  font-size:.72rem!important;
-  padding:2px 4px!important;
-  border-radius:7px!important;
-}
-
-.col-msem,
-.col-mmes{
-  font-size:.62rem!important;
-  max-width:34px!important;
-  white-space:nowrap!important;
-}
-
-/* Meta mensal: compacta o mapa mensal para caber sem rolagem lateral */
-.hm-wrap{
-  overflow-x:hidden!important;
-  padding:14px 10px!important;
-}
-
-.hm-th-mes{
-  font-size:.50rem!important;
-  letter-spacing:1.2px!important;
-  min-width:28px!important;
-  padding-right:4px!important;
-}
-
-.hm-th-unit,
-.hm-th-geral{
-  font-size:.52rem!important;
-  min-width:34px!important;
-  padding-left:1px!important;
-  padding-right:1px!important;
-}
-
-.hm-td-mes{
-  font-size:.62rem!important;
-  padding-right:4px!important;
-}
-
-.hm-cell,
-.hm-cell-g{
-  padding-left:1px!important;
-  padding-right:1px!important;
-}
-
-.pip{
-  width:28px!important;
-  height:26px!important;
-  border-radius:8px!important;
-  font-size:.76rem!important;
-}
-
-.hm-pct-lbl{
-  font-size:.46rem!important;
-  letter-spacing:1px!important;
-  padding-right:4px!important;
-}
-
-.pv{
-  font-size:.68rem!important;
-}
-
-/* Garante que o bloco inteiro respeite a largura da tela */
-.tbl-wrap,
-.hm-wrap{
-  width:100%!important;
-  max-width:100%!important;
-}
-
-table.week,
-table.hm{
-  width:100%!important;
-  table-layout:fixed!important;
-}
-
-
-/* Ajuste fino dos títulos */
-table.week thead tr.hg th{
-  font-size:.44rem!important;
-  letter-spacing:.8px!important;
-  white-space:nowrap!important;
-}
-
-/* Ajuste dos subtítulos */
-table.week thead tr.hd th{
-  font-size:.44rem!important;
-  letter-spacing:.2px!important;
-  white-space:nowrap!important;
-}
-
 </style>
 </head>
 <body>
@@ -653,20 +488,27 @@ function parseRSBlock(values, dateRow, dataRow){
   const unitMap=[['HS',0],['VO',2],['CP',4],['MO',6],['TT',8],['JD',10]];
   const result={_meta:{ini:fmt(dataIni),fim:fmt(dataFim||dataIni),mes,ano,sid:semId}};
   
+  const fatTicketColIdx={HS:4,VO:3,MO:2,TT:5,JD:6,CP:7};
   unitMap.forEach(([u,off])=>{
     const sr=values[dataRow+off]||[];
     const cr=values[dataRow+off+1]||[];
     const iv=v=>{try{return parseInt(v)||0;}catch{return 0;}};
     const fv=v=>{try{const n=parseFloat(v);return n>0?n:0;}catch{return 0;}};
+    const fv2=v=>{try{const n=parseFloat(String(v).replace(/[^0-9.,]/g,'').replace(',','.'));return n>0?n:0;}catch{return 0;}};
     const s=[2,3,4,5,6,7,8].map(i=>iv(sr[i]));
     const c=[2,3,4,5,6,7,8].map(i=>iv(cr[i]));
     const tot=iv(sr[9])||s.reduce((a,b)=>a+b,0);
     const tot_c=iv(cr[9]);
     const acum=iv(sr[10]);
     const acum_c=iv(cr[10]);
-    const mm=fv(sr[11]);
+    const colIdx=fatTicketColIdx[u]||4;
+    const fatMetaRow=values[70+dataIni.getMonth()]||[];
+    const ticketRow=values[86+dataIni.getMonth()]||[];
+    const fatMeta=fv2(fatMetaRow[colIdx]);
+    const ticket=fv2(ticketRow[colIdx]);
     const diasMes=new Date(ano,dataIni.getMonth()+1,0).getDate();
-    const ms=mm>0?Math.round(mm/diasMes*7*10)/10:0;
+    const mm=fatMeta>0&&ticket>0?Math.round(fatMeta/ticket/4.8):0;
+    const ms=mm>0?Math.round(mm/diasMes*7):0;
     const pct=mm>0?Math.round(acum/mm*1000)/10:0;
     result[u]={s,c,tot,tot_c,acum,acum_c,ms,mm:Math.round(mm),pct};
   });
@@ -830,103 +672,6 @@ if(currentIdx<0) currentIdx=window.WI.length-1;
 document.getElementById('lo').style.display='none';
 render(currentIdx);
 fetchFreshData();
-</script>
-<script>
-
-/* PATCH LOGICA - metas com comparação proporcional */
-function __e60Num(v){
-  if(v===null || v===undefined || v==='') return 0;
-  if(typeof v === 'number') return v;
-  return Number(String(v).replace(/\./g,'').replace(',','.').replace(/[^\d.-]/g,'')) || 0;
-}
-
-function __e60DaysInMonthFromDate(d){
-  const dt = d instanceof Date ? d : new Date(d);
-  if(isNaN(dt.getTime())) return 30;
-  return new Date(dt.getFullYear(), dt.getMonth()+1, 0).getDate();
-}
-
-function __e60DayOfMonthFromDate(d){
-  const dt = d instanceof Date ? d : new Date(d);
-  if(isNaN(dt.getTime())) return new Date().getDate();
-  return dt.getDate();
-}
-
-function __e60MetaMensalProporcional(metaMes, dataBase){
-  const meta = __e60Num(metaMes);
-  const diasMes = __e60DaysInMonthFromDate(dataBase);
-  const diaAtual = __e60DayOfMonthFromDate(dataBase);
-  return meta / diasMes * diaAtual;
-}
-
-function __e60ClasseMetaSemanal(total, metaSemana){
-  return __e60Num(total) >= Math.round(__e60Num(metaSemana)) ? 'hit' : 'mis';
-}
-
-function __e60ClasseMetaMensalProporcional(acum, metaMes, dataBase){
-  return __e60Num(acum) >= __e60MetaMensalProporcional(metaMes, dataBase) ? 'hit' : 'mis';
-}
-
-function __e60MetaSemanaArredondada(metaSemana){
-  return Math.round(__e60Num(metaSemana));
-}
-
-</script>
-<script>
-
-(function(){
-  function parseCellNumber(td){
-    if(!td) return 0;
-    const firstLine = (td.innerText || '').split(/\n/)[0];
-    return __e60Num(firstLine);
-  }
-
-  function getDisplayedEndDate(){
-    const el = document.querySelector('.week-dates');
-    if(!el) return new Date();
-    const txt = el.textContent || '';
-    const m = txt.match(/(\d{2})\/(\d{2})\s*-\s*(\d{2})\/(\d{2})/);
-    const y = (document.querySelector('.week-label')?.textContent || '').match(/20\d{2}/)?.[0] || new Date().getFullYear();
-    if(m) return new Date(Number(y), Number(m[4])-1, Number(m[3]));
-    return new Date();
-  }
-
-  function applyGoalBadges(){
-    const dataBase = getDisplayedEndDate();
-    document.querySelectorAll('table.week tbody tr.r-s, table.week tbody tr.total-row').forEach(row=>{
-      const cells = Array.from(row.children);
-      const totalCell = row.querySelector('.col-tot');
-      const acumCell = row.querySelector('.col-acum');
-
-      if(!totalCell || !acumCell) return;
-
-      const totalIndex = cells.indexOf(totalCell);
-      const acumIndex = cells.indexOf(acumCell);
-
-      const metaSemCell = cells[totalIndex + 2] || row.querySelector('.col-msem');
-      const metaMesCell = cells[totalIndex + 3] || row.querySelector('.col-mmes');
-
-      const total = parseCellNumber(totalCell);
-      const acum = parseCellNumber(acumCell);
-      const metaSem = parseCellNumber(metaSemCell);
-      const metaMes = parseCellNumber(metaMesCell);
-
-      totalCell.classList.remove('hit','mis');
-      acumCell.classList.remove('hit','mis');
-
-      totalCell.classList.add(__e60ClasseMetaSemanal(total, metaSem));
-      acumCell.classList.add(__e60ClasseMetaMensalProporcional(acum, metaMes, dataBase));
-
-      if(metaSemCell) metaSemCell.textContent = String(__e60MetaSemanaArredondada(metaSem));
-    });
-  }
-
-  const oldSetTimeout = window.setTimeout;
-  window.addEventListener('load',()=>setTimeout(applyGoalBadges, 400));
-  const obs = new MutationObserver(()=>setTimeout(applyGoalBadges, 50));
-  obs.observe(document.body,{childList:true,subtree:true,characterData:true});
-})();
-
 </script>
 </body>
 </html>
