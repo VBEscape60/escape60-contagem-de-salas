@@ -234,6 +234,127 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
   font-variant-numeric:tabular-nums;
 }
 
+
+/* PATCH MOBILE FINAL - remove coluna % e compacta metas */
+table.week th:last-child,
+table.week td:last-child{
+  display:none!important;
+}
+
+/* Reduz um pouco a tabela, mantendo leitura no celular em pé */
+table.week thead tr.hg th{
+  font-size:.52rem!important;
+  letter-spacing:1.4px!important;
+  padding-left:3px!important;
+  padding-right:3px!important;
+}
+
+table.week thead tr.hd th{
+  font-size:.52rem!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+}
+
+.r-s td,.r-c td{
+  font-size:.72rem!important;
+  padding-left:2px!important;
+  padding-right:2px!important;
+}
+
+.r-s td:first-child{
+  padding-left:10px!important;
+}
+
+.r-c td:first-child{
+  padding-left:24px!important;
+}
+
+.unit-name{
+  font-size:.78rem!important;
+  gap:5px!important;
+}
+
+.dot{
+  width:7px!important;
+  height:7px!important;
+}
+
+.col-tot,
+.col-acum{
+  font-size:.72rem!important;
+  padding:2px 4px!important;
+  border-radius:7px!important;
+}
+
+.col-msem,
+.col-mmes{
+  font-size:.62rem!important;
+  max-width:34px!important;
+  white-space:nowrap!important;
+}
+
+/* Meta mensal: compacta o mapa mensal para caber sem rolagem lateral */
+.hm-wrap{
+  overflow-x:hidden!important;
+  padding:14px 10px!important;
+}
+
+.hm-th-mes{
+  font-size:.50rem!important;
+  letter-spacing:1.2px!important;
+  min-width:28px!important;
+  padding-right:4px!important;
+}
+
+.hm-th-unit,
+.hm-th-geral{
+  font-size:.52rem!important;
+  min-width:34px!important;
+  padding-left:1px!important;
+  padding-right:1px!important;
+}
+
+.hm-td-mes{
+  font-size:.62rem!important;
+  padding-right:4px!important;
+}
+
+.hm-cell,
+.hm-cell-g{
+  padding-left:1px!important;
+  padding-right:1px!important;
+}
+
+.pip{
+  width:28px!important;
+  height:26px!important;
+  border-radius:8px!important;
+  font-size:.76rem!important;
+}
+
+.hm-pct-lbl{
+  font-size:.46rem!important;
+  letter-spacing:1px!important;
+  padding-right:4px!important;
+}
+
+.pv{
+  font-size:.68rem!important;
+}
+
+/* Garante que o bloco inteiro respeite a largura da tela */
+.tbl-wrap,
+.hm-wrap{
+  width:100%!important;
+  max-width:100%!important;
+}
+
+table.week,
+table.hm{
+  width:100%!important;
+  table-layout:fixed!important;
+}
+
 </style>
 </head>
 <body>
