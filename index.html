@@ -60,7 +60,7 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 
 /* TABLE CARD */
 .tbl-wrap{
-  overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;
+  overflow-x:hidden;-webkit-overflow-scrolling:touch;width:100%;
   background:var(--s1);border-radius:var(--radius);
   box-shadow:var(--shadow);border:1px solid var(--border2);
 }
@@ -151,7 +151,7 @@ table.week thead th:first-child{text-align:left;padding-left:18px;width:48px;}
 
 /* HEATMAP */
 .hm-wrap{
-  overflow-x:auto;-webkit-overflow-scrolling:touch;
+  overflow-x:hidden;-webkit-overflow-scrolling:touch;
   background:var(--s1);border-radius:var(--radius);
   box-shadow:var(--shadow);border:1px solid var(--border2);padding:18px 16px;
 }
@@ -672,6 +672,7 @@ if(currentIdx<0) currentIdx=window.WI.length-1;
 document.getElementById('lo').style.display='none';
 render(currentIdx);
 fetchFreshData();
+setInterval(fetchFreshData,60000);
 </script>
 </body>
 </html>
