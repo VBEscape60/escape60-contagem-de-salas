@@ -33,7 +33,7 @@ html,body{
   font-family:'Inter',sans-serif;font-size:15.4px;
   overflow-x:hidden;-webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:560px;margin:0 auto;padding:18px 12px 32px;overflow:hidden;}
+.wrap{max-width:680px;margin:0 auto;padding:16px 8px 28px;overflow:hidden;}
 
 /* HEADER */
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;}
@@ -66,36 +66,54 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 }
 table.week{border-collapse:collapse;width:100%;table-layout:fixed;}
 table.week thead tr.hg th{
-  font-size:.64rem;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;
-  color:var(--muted);padding:16px 6px 8px;text-align:center;
+  font-size:.52rem;font-weight:800;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);padding:10px 2px 6px;text-align:center;
   border-bottom:1px solid var(--border);background:var(--s2);
+  line-height:1.05;white-space:normal;
+}
+table.week thead tr.hg th:nth-child(n+3){
+  height:54px;
+  vertical-align:bottom;
+  transform:rotate(-35deg);
+  transform-origin:50% 85%;
+  white-space:nowrap;
+  padding-bottom:12px;
 }
 table.week thead tr.hg th:first-child{border-radius:var(--radius) 0 0 0;}
 table.week thead tr.hg th.hl{color:var(--text);}
 table.week thead tr.hd th{
-  font-size:.68rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
-  color:var(--sub);padding:4px 4px 10px;text-align:center;background:var(--s2);
+  font-size:.54rem;font-weight:700;letter-spacing:.15px;text-transform:uppercase;
+  color:var(--sub);padding:3px 1px 8px;text-align:center;background:var(--s2);
+  line-height:1.05;white-space:nowrap;
 }
-table.week thead th:first-child{text-align:left;padding-left:18px;width:48px;}
+table.week thead th:first-child{text-align:left;padding-left:10px;width:42px;}
+table.week col.c-unit{width:42px;}
+table.week col.c-day{width:7.3%;}
+table.week col.c-total{width:8.5%;}
+table.week col.c-acum{width:8.8%;}
+table.week col.c-msem{width:8.4%;}
+table.week col.c-mmes{width:8.6%;}
+table.week col.c-pct{width:7.6%;}
 .r-s td,.r-c td{
   text-align:center;font-family:'Inter',sans-serif;
-  font-size:.75rem;padding:2px 2px;
+  font-size:.66rem;padding:2px 1px;
+  white-space:nowrap;
 }
-.r-s td:first-child{text-align:left;padding-left:18px;}
+.r-s td:first-child{text-align:left;padding-left:8px;}
 .r-c td:first-child{
-  text-align:left;padding-left:32px;color:var(--sub);
-  font-size:.68rem;font-weight:500;
+  text-align:left;padding-left:13px;color:var(--sub);
+  font-size:.56rem;font-weight:600;
 }
-.r-s td{border-top:1px solid var(--border2);padding-top:12px;}
-.r-c td{padding-bottom:10px;}
+.r-s td{border-top:1px solid var(--border2);padding-top:9px;}
+.r-c td{padding-bottom:8px;}
 
 /* Unit */
-.unit-name{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.82rem;}
-.dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.unit-name{display:flex;align-items:center;gap:4px;font-weight:800;font-size:.68rem;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .zero{color:var(--sub);}
 
 /* Total column - cor da unidade */
-.col-tot{font-weight:800;font-size:.82rem;padding:2px 4px!important;border-radius:7px;}
+.col-tot{font-weight:800;font-size:.68rem;padding:2px 1px!important;border-radius:6px;}
 .col-tot.HS{color:var(--hs);background:rgba(232,80,10,.10);}
 .col-tot.VO{color:var(--vo);background:rgba(13,148,136,.10);}
 .col-tot.MO{color:var(--mo);background:rgba(202,138,4,.10);}
@@ -107,23 +125,23 @@ table.week thead th:first-child{text-align:left;padding-left:18px;width:48px;}
 .col-tot.TOTAL{color:var(--text);}
 
 /* Acum column - azul */
-.col-acum{color:var(--acum);font-weight:700;font-size:.82rem;}
-.col-acum.hit{color:var(--up)!important;background:var(--up-bg);border-radius:6px;padding:2px 5px!important;}
-.col-acum.mis{color:var(--down)!important;background:var(--down-bg);border-radius:6px;padding:2px 5px!important;}
-.col-msem{color:var(--sub);font-size:.70rem;}
-.col-mmes{color:var(--muted);font-size:.70rem;}
+.col-acum{color:var(--acum);font-weight:800;font-size:.68rem;}
+.col-acum.hit{color:var(--up)!important;background:var(--up-bg);border-radius:6px;padding:2px 1px!important;}
+.col-acum.mis{color:var(--down)!important;background:var(--down-bg);border-radius:6px;padding:2px 1px!important;}
+.col-msem{color:var(--sub);font-size:.57rem;font-weight:700;}
+.col-mmes{color:var(--muted);font-size:.57rem;font-weight:700;}
 
 /* % */
-.pct{font-weight:700;font-size:.80rem;}
+.pct{font-weight:800;font-size:.66rem;}
 .pct.ok{color:var(--up);}
 .pct.mid{color:var(--warn);}
 .pct.low{color:var(--down);}
 
 /* Total row */
 .total-row td{
-  font-weight:700;color:var(--text);font-size:.82rem;
+  font-weight:800;color:var(--text);font-size:.67rem;
   border-top:2px solid var(--border)!important;
-  padding-top:12px!important;background:var(--s2);
+  padding-top:9px!important;background:var(--s2);
 }
 
 /* RECORDS */
@@ -153,7 +171,7 @@ table.week thead th:first-child{text-align:left;padding-left:18px;width:48px;}
 .hm-wrap{
   overflow-x:hidden;-webkit-overflow-scrolling:touch;
   background:var(--s1);border-radius:var(--radius);
-  box-shadow:var(--shadow);border:1px solid var(--border2);padding:18px 16px;
+  box-shadow:var(--shadow);border:1px solid var(--border2);padding:16px 10px;
 }
 table.hm{border-collapse:collapse;width:100%;table-layout:fixed;}
 .hm-th-mes{
@@ -161,12 +179,12 @@ table.hm{border-collapse:collapse;width:100%;table-layout:fixed;}
   color:var(--muted);text-align:left;padding:0 8px 14px 0;min-width:36px;
 }
 .hm-th-unit{
-  font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  text-align:center;padding:0 3px 14px;min-width:46px;
+  font-size:.57rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  text-align:center;padding:0 1px 12px;min-width:36px;
 }
 .hm-th-geral{
-  font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-  text-align:center;padding:0 3px 14px;min-width:46px;color:var(--muted);
+  font-size:.57rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;
+  text-align:center;padding:0 1px 12px;min-width:36px;color:var(--muted);
   border-left:2px solid var(--border);
 }
 .hm-td-mes{
@@ -178,7 +196,7 @@ table.hm{border-collapse:collapse;width:100%;table-layout:fixed;}
 .hm-cell-g{text-align:center;padding:4px 3px;vertical-align:middle;border-left:2px solid var(--border);}
 .pip{
   display:inline-flex;align-items:center;justify-content:center;
-  width:38px;height:34px;border-radius:10px;font-size:.82rem;
+  width:31px;height:29px;border-radius:9px;font-size:.72rem;
 }
 .pip.hit{background:rgba(22,163,74,.10);color:#16A34A;border:1px solid rgba(22,163,74,.18);}
 .pip.miss{background:rgba(220,38,38,.08);color:#DC2626;font-size:.82rem;font-weight:800;border:1px solid rgba(220,38,38,.15);}
@@ -191,7 +209,7 @@ table.hm{border-collapse:collapse;width:100%;table-layout:fixed;}
 }
 .hm-td-pct{text-align:center;padding:10px 3px 4px;}
 .hm-td-pct-g{text-align:center;padding:10px 3px 4px;border-left:2px solid var(--border);}
-.pv{font-weight:800;font-size:.82rem;}
+.pv{font-weight:800;font-size:.66rem;}
 .pv.ok{color:var(--up);}.pv.mid{color:var(--warn);}.pv.low{color:var(--down);}
 
 #ds{text-align:center;font-size:.62rem;margin-top:10px;cursor:pointer;font-weight:500;}
@@ -229,11 +247,16 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
   <div class="sec">Salas da Semana</div>
   <div class="tbl-wrap">
     <table class="week">
+      <colgroup>
+        <col class="c-unit">
+        <col class="c-day"><col class="c-day"><col class="c-day"><col class="c-day"><col class="c-day"><col class="c-day"><col class="c-day">
+        <col class="c-total"><col class="c-acum"><col class="c-msem"><col class="c-mmes"><col class="c-pct">
+      </colgroup>
       <thead>
         <tr class="hg">
           <th></th><th colspan="7">Dias da semana</th>
-          <th class="hl">Total</th><th class="hl">Acum.</th>
-          <th>Meta<br>Sem.</th><th>Meta<br>Mês</th><th class="hl">%</th>
+          <th class="hl">Tot.</th><th class="hl">Acum.</th>
+          <th>M.<br>Sem.</th><th>M.<br>Mês</th><th class="hl">%</th>
         </tr>
         <tr class="hd">
           <th></th>
@@ -291,6 +314,32 @@ const UNIT_CFG=[
   {code:'HS',color:'var(--hs)'},{code:'VO',color:'var(--vo)'},{code:'MO',color:'var(--mo)'},
   {code:'TT',color:'var(--tt)'},{code:'JD',color:'var(--jd)'},{code:'CP',color:'var(--cp)'},
 ];
+
+
+function formatarDataBR(valor){
+  const opcoes={day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'};
+
+  if(!valor){
+    return new Date().toLocaleString('pt-BR',opcoes);
+  }
+
+  try{
+    let texto=String(valor).trim();
+
+    // O Office Script pode devolver data em formato americano sem fuso, ex: 5/19/2026, 6:14:28 PM.
+    // Nesse caso tratamos como UTC e exibimos em horário de São Paulo.
+    if(/^\d{1,2}\/\d{1,2}\/\d{4}/.test(texto) && !/(Z|GMT|UTC|[+-]\d{2}:?\d{2})$/i.test(texto)){
+      texto += ' UTC';
+    }
+
+    const data=new Date(texto);
+    if(!isNaN(data.getTime())){
+      return data.toLocaleString('pt-BR',opcoes);
+    }
+  }catch(e){}
+
+  return new Date().toLocaleString('pt-BR',opcoes);
+}
 
 function pctClass(p){return p>=90?'ok':p>=60?'mid':'low';}
 function pvClass(p){return p>=33?'ok':p>=20?'mid':'low';}
@@ -426,7 +475,7 @@ function render(idx){
   hm.innerHTML=h+b2;
 
   document.getElementById('ft').innerHTML=
-    new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})
+    formatarDataBR()
     +'&nbsp;·&nbsp;<span style="opacity:.45;font-style:italic">criado por VB</span>';
 }
 
@@ -615,7 +664,7 @@ async function fetchFreshData(){
     if(!resp.ok) throw new Error(`dados.json: ${resp.status}`);
     const data=await resp.json();
     const ok=applyDashboardData(data);
-    const stamp=data.atualizadoEm || data.updatedAt || new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const stamp=formatarDataBR(data.atualizadoEm || data.updatedAt);
 
     // Quando o dados.json ainda está em modo teste/vazio, mantém os dados estáticos do painel.
     // Isso evita mensagem de erro falsa enquanto o Power Automate/GitHub Actions ainda não alimentou o arquivo.
