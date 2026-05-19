@@ -139,13 +139,19 @@ table.week col.c-pct{width:9.4%;}
 
 /* Total row */
 .total-row td{
-  font-weight:800;color:var(--text);font-size:.67rem;
+  font-weight:800;
+  color:inherit;
+  font-size:.67rem;
   border-top:2px solid var(--border)!important;
-  padding-top:9px!important;background:var(--s2);
+  padding-top:9px!important;
+  background:transparent!important;
 }
-.total-row .col-acum{color:var(--acum)!important;}
-.total-row .col-msem{color:var(--sub)!important;}
-.total-row .col-mmes{color:var(--muted)!important;}
+.total-row td:first-child span{color:var(--muted)!important;}
+.total-row .col-tot.hit{color:var(--up)!important;background:var(--up-bg)!important;}
+.total-row .col-tot.mis{color:var(--down)!important;background:var(--down-bg)!important;}
+.total-row .col-acum{color:var(--acum)!important;background:transparent!important;}
+.total-row .col-msem{color:var(--sub)!important;background:transparent!important;}
+.total-row .col-mmes{color:var(--muted)!important;background:transparent!important;}
 .total-row .pct.ok{color:var(--up)!important;}
 .total-row .pct.mid{color:var(--warn)!important;}
 .total-row .pct.low{color:var(--down)!important;}
