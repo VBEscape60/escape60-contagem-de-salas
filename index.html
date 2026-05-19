@@ -88,12 +88,12 @@ table.week thead tr.hd th{
 }
 table.week thead th:first-child{text-align:left;padding-left:10px;width:42px;}
 table.week col.c-unit{width:42px;}
-table.week col.c-day{width:7.3%;}
-table.week col.c-total{width:8.5%;}
-table.week col.c-acum{width:8.8%;}
-table.week col.c-msem{width:8.4%;}
-table.week col.c-mmes{width:8.6%;}
-table.week col.c-pct{width:7.6%;}
+table.week col.c-day{width:7.0%;}
+table.week col.c-total{width:8.1%;}
+table.week col.c-acum{width:8.4%;}
+table.week col.c-msem{width:8.0%;}
+table.week col.c-mmes{width:8.1%;}
+table.week col.c-pct{width:9.4%;}
 .r-s td,.r-c td{
   text-align:center;font-family:'Inter',sans-serif;
   font-size:.66rem;padding:2px 1px;
@@ -101,8 +101,8 @@ table.week col.c-pct{width:7.6%;}
 }
 .r-s td:first-child{text-align:left;padding-left:8px;}
 .r-c td:first-child{
-  text-align:left;padding-left:13px;color:var(--sub);
-  font-size:.56rem;font-weight:600;
+  text-align:left;padding-left:13px;color:var(--text);
+  font-size:.56rem;font-weight:700;
 }
 .r-s td{border-top:1px solid var(--border2);padding-top:9px;}
 .r-c td{padding-bottom:8px;}
@@ -132,7 +132,7 @@ table.week col.c-pct{width:7.6%;}
 .col-mmes{color:var(--muted);font-size:.57rem;font-weight:700;}
 
 /* % */
-.pct{font-weight:800;font-size:.66rem;}
+.pct{font-weight:800;font-size:.62rem;padding-left:0!important;padding-right:0!important;}
 .pct.ok{color:var(--up);}
 .pct.mid{color:var(--warn);}
 .pct.low{color:var(--down);}
@@ -143,6 +143,14 @@ table.week col.c-pct{width:7.6%;}
   border-top:2px solid var(--border)!important;
   padding-top:9px!important;background:var(--s2);
 }
+.total-row .col-acum{color:var(--acum)!important;}
+.total-row .col-msem{color:var(--sub)!important;}
+.total-row .col-mmes{color:var(--muted)!important;}
+.total-row .pct.ok{color:var(--up)!important;}
+.total-row .pct.mid{color:var(--warn)!important;}
+.total-row .pct.low{color:var(--down)!important;}
+.r-c td,.r-c .zero,.r-c .col-tot,.r-c .col-acum{color:var(--text)!important;}
+.r-c td:not(:first-child){font-weight:600;}
 
 /* RECORDS */
 .records{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
@@ -424,7 +432,7 @@ function render(idx){
       <td><span style="font-size:.65rem;font-weight:600;color:var(--muted)">TOTAL</span></td>
       ${dc2}
       <td class="col-tot ${tMs>0&&tS>=tMs?'hit':'mis'}">${tS}</td>
-      <td class="col-acum ${tMm>0?'':''}">  ${tA}</td>
+      <td class="col-acum">${tA}</td>
       <td class="col-msem">${tMs.toFixed(0)}</td>
       <td class="col-mmes">${tMm.toFixed(0)}</td>
       <td class="pct ${pctClass(parseFloat(tPct))}">${tPct}%</td>
