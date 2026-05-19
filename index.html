@@ -255,17 +255,12 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
   <div class="sec">Metas Mensais · <span id="am">2026</span></div>
   <div class="hm-wrap"><table class="hm" id="hm"></table></div>
 
-  <div id="ds" style="color:var(--muted)">dados: planilha local</div>
+  <div id="ds" style="color:var(--muted)">dados: aguardando dados.json</div>
   <footer id="ft"></footer>
 </div>
 
 <script>
-const CLIENT_ID='5316ae6b-b5b0-4d3c-8d01-207aa3a052d4';
-const TENANT_ID='8c401f2f-30a2-4159-9e83-b7a9d2bbcee0';
-const SHARE_ID='u!aHR0cHM6Ly9lc2NhcGVzZXNzZW50YS5zaGFyZXBvaW50LmNvbS86eDovcy9MaWRlcmFuYUVzY2FwZTYwJy9JUUFINFEtcmxUaURUWnplZVJZLWhJTEFBYjlCYWlEM01aRHNJMGwtcGJsS2luST9lPTU4bFRpSw';
-const SCOPES='Files.Read Sites.Read.All User.Read';
-const TOKEN_KEY='e60_token';
-const TOKEN_EXP='e60_token_exp';
+const DATA_URL='dados.json';
 
 // Dados estáticos
 window.WI=[202618, 202619, 202620];
@@ -515,140 +510,119 @@ function parseRSBlock(values, dateRow, dataRow){
   return{semId,result};
 }
 
-async function fetchFreshData(){
-  if(window.location.protocol!=='https:') return;
-  captureToken();
-  const token=getToken();
-  const ds=document.getElementById('ds');
-  if(!token){
-    ds.textContent='toque para atualizar dados';
-    ds.style.color='#FFD166';
-    ds.onclick=loginMS;
-    return;
-  }
-  ds.textContent='atualizando...'; ds.style.color='#FFD166'; ds.onclick=null;
-  try{
-    const r1=await fetch(`https://graph.microsoft.com/v1.0/shares/${SHARE_ID}/driveItem`,{headers:{Authorization:`Bearer ${token}`}});
-    if(r1.status===401){localStorage.removeItem(TOKEN_KEY);ds.textContent='sessão expirada · toque para renovar';ds.style.color='#FFD166';ds.onclick=loginMS;return;}
-    if(!r1.ok) throw new Error(`driveItem: ${r1.status}`);
-    const d1=await r1.json();
-    const driveId=d1.parentReference.driveId,itemId=d1.id;
+function unitDefault(){
+  return {s:[0,0,0,0,0,0,0],c:[0,0,0,0,0,0,0],tot:0,tot_c:0,acum:0,acum_c:0,ms:0,mm:0,pct:0};
+}
 
-    // Lê só o Resumo Semanal — 1 requisição!
-    const r2=await fetch(
-      `https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/workbook/worksheets('Resumo Semanal')/range(address='A1:U98')`,
-      {headers:{Authorization:`Bearer ${token}`}}
-    );
-    if(!r2.ok) throw new Error(`RS: ${r2.status}`);
-    const d2=await r2.json();
-    const v=d2.values;
-    
-    // Parse 3 blocos
-    // Bloco atual: linha 1=titulo, linha 2=datas(idx1), dados idx2
-    // Bloco -7: linha 20=titulo+datas(idx19), dados idx20
-    // Bloco -14: linha 37=titulo+datas(idx36), dados idx37
-    console.log('Total linhas:', v.length, 'Total cols:', v[0]?.length);
-    console.log('L2 (datas):', v[1]?.slice(0,12));
-    console.log('L3 (HS):', v[2]?.slice(0,12));
-    console.log('L20 (-7):', v[19]?.slice(0,12));
-    console.log('L37 (-14):', v[36]?.slice(0,12));
-    const b0=parseRSBlock(v,1,2);
-    const b1=parseRSBlock(v,19,20);
-    const b2=parseRSBlock(v,36,37);
-    console.log('b0:', b0?.semId, b0?.result?.HS?.tot);
-    console.log('b1:', b1?.semId, b1?.result?.HS?.tot);
-    console.log('b2:', b2?.semId, b2?.result?.HS?.tot);
-    
-    const newIds=[],newData={};
-    [b0,b1,b2].forEach(b=>{
-      if(b){newIds.push(b.semId);newData[String(b.semId)]=b.result;}
-    });
-    newIds.sort((a,b)=>a-b);
-    
-    // Garante semana atual
-    const tSid=getSemanaId(new Date());
-    if(!newIds.includes(tSid)){
-      newIds.push(tSid);
-      newIds.sort((a,b)=>a-b);
-      const now=new Date(),dow=now.getDay(),diff=dow===0?-6:1-dow;
-      const seg=new Date(now); seg.setDate(now.getDate()+diff);
-      const dom=new Date(seg); dom.setDate(seg.getDate()+6);
-      const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-      const mesL=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][seg.getMonth()];
-      newData[String(tSid)]={_meta:{ini:fmt(seg),fim:fmt(dom),mes:mesL,ano:seg.getFullYear(),sid:tSid}};
+function normalizeUnit(u){
+  const d=unitDefault();
+  if(!u || typeof u!=='object') return d;
+  d.s=Array.isArray(u.s)?u.s.map(x=>parseInt(x)||0):d.s;
+  d.c=Array.isArray(u.c)?u.c.map(x=>parseInt(x)||0):d.c;
+  d.tot=parseInt(u.tot ?? u.total ?? d.s.reduce((a,b)=>a+b,0))||0;
+  d.tot_c=parseInt(u.tot_c ?? u.total_corp ?? u.corp ?? d.c.reduce((a,b)=>a+b,0))||0;
+  d.acum=parseInt(u.acum ?? u.acumulado ?? 0)||0;
+  d.acum_c=parseInt(u.acum_c ?? u.acumulado_corp ?? 0)||0;
+  d.ms=parseFloat(u.ms ?? u.meta_semana ?? u.metaSemanal ?? 0)||0;
+  d.mm=parseFloat(u.mm ?? u.meta_mes ?? u.metaMensal ?? 0)||0;
+  d.pct=parseFloat(u.pct ?? u.percentual ?? (d.mm>0 ? d.acum/d.mm*100 : 0))||0;
+  return d;
+}
+
+function normalizeSemana(item){
+  if(!item || typeof item!=='object') return null;
+  const meta=item._meta || item.meta || item;
+  const sid=parseInt(meta.sid ?? item.sid ?? item.semId ?? item.semanaId ?? item.id);
+  if(!sid) return null;
+  const result={_meta:{
+    ini:meta.ini || meta.inicio || meta.dataInicio || '—',
+    fim:meta.fim || meta.final || meta.dataFim || '—',
+    mes:meta.mes || '',
+    ano:parseInt(meta.ano)||parseInt(String(sid).slice(0,4))||new Date().getFullYear(),
+    sid
+  }};
+  const unidades=item.unidades || item.units || item;
+  UNIT_CFG.forEach(u=>{result[u.code]=normalizeUnit(unidades[u.code]);});
+  return {semId:sid,result};
+}
+
+function applyDashboardData(data){
+  if(!data || typeof data!=='object') return false;
+  let updated=false;
+
+  if(data.WD && typeof data.WD==='object'){
+    window.WD=data.WD;
+    window.WI=Array.isArray(data.WI)?data.WI.map(Number).sort((a,b)=>a-b):Object.keys(data.WD).map(Number).filter(Boolean).sort((a,b)=>a-b);
+    updated=true;
+  }
+
+  const semanasFonte=data.semanas || data.weeks;
+  const semanasArray=Array.isArray(semanasFonte)
+    ? semanasFonte
+    : (semanasFonte && typeof semanasFonte==='object' ? Object.values(semanasFonte) : []);
+
+  semanasArray.forEach(item=>{
+    const b=normalizeSemana(item);
+    if(b){
+      window.WD[String(b.semId)]=b.result;
+      if(!window.WI.includes(b.semId)) window.WI.push(b.semId);
+      updated=true;
     }
-    
-    // Acompanhamento metas calculado automaticamente via faturamento vs meta
-    // (atualiza quando faturamento do mês for maior que a meta)
+  });
+
+  if(data.metasAcmp && typeof data.metasAcmp==='object'){
+    Object.assign(METAS_ACMP,data.metasAcmp);
+    updated=true;
+  }
+
+  if(Array.isArray(data.metas) && data.metas.length){
     const anoAtual=new Date().getFullYear();
-    const mesAtual=new Date().getMonth()+1;
-    if(METAS_ACMP[anoAtual]){
-      for(let i=0;i<12;i++){
-        const m=i+1;
-        if(m>=mesAtual){ break; } // mês atual e futuros = null (em andamento)
-        const unitCols={MO:2,VO:3,HS:4,TT:5,JD:6,CP:7};
-        let geralBat=true;
-        // Fat: L56=Jan(idx55)... Meta: L71=Jan(idx70)... cols: MO=2,VO=3,HS=4,TT=5,JD=6,CP=7
-        Object.entries(unitCols).forEach(([u,c])=>{
-          const fatRow=v[55+i]||[];
-          const metaRow=v[70+i]||[];
-          const fatVal=parseFloat(fatRow[c])||0;
-          const metaVal=parseFloat(metaRow[c])||0;
-          const bateu=metaVal>0&&fatVal>=metaVal?1:0;
-          METAS_ACMP[anoAtual][i][u]=bateu;
-          if(!bateu) geralBat=false;
-        });
-        // Geral = soma fat total >= soma meta total
-        const fatGeral=Object.values(unitCols).reduce((s,c)=>s+(parseFloat((v[55+i]||[])[c])||0),0);
-        const metaGeral=Object.values(unitCols).reduce((s,c)=>s+(parseFloat((v[70+i]||[])[c])||0),0);
-        METAS_ACMP[anoAtual][i].G=metaGeral>0&&fatGeral>=metaGeral?1:0;
-      }
-    }
-    
-    // Atualiza % anual com faturamento real (linhas 56-67=idx55-66) e metas (70-81=idx69-80)
-    const unitFatCols={MO:2,VO:3,HS:4,TT:5,JD:6,CP:7};
-    const newPct={};
-    Object.entries(unitFatCols).forEach(([u,c])=>{
-      let fatAcum=0,metaAno=0;
-      for(let i=0;i<12;i++){
-        const fv=parseFloat((v[55+i]||[])[c])||0; if(fv>0) fatAcum+=fv;
-        const mv=parseFloat((v[70+i]||[])[c])||0; if(mv>0) metaAno+=mv; // L71=Jan meta idx70
-      }
-      // % atingido do ano
-      newPct[u]=metaAno>0?Math.round(fatAcum/metaAno*1000)/10:0;
+    if(!METAS_ACMP[anoAtual]) METAS_ACMP[anoAtual]=[];
+    data.metas.forEach((m,i)=>{
+      if(m && typeof m==='object') METAS_ACMP[anoAtual][i]=Object.assign(METAS_ACMP[anoAtual][i]||{},m);
     });
-    console.log('PCT_ANO atualizado:', newPct);
-    Object.assign(PCT_ANO,newPct);
-    
-    // Merge: só atualiza semanas com dados válidos, mantém estáticos para o resto
-    let updated=false;
-    newIds.forEach(sid=>{
-      const d=newData[String(sid)];
-      if(d && Object.keys(d).length>1){
-        // Verifica se tem pelo menos 1 unidade com tot>0
-        const hasUnits=['HS','VO','MO','TT','JD','CP'].some(u=>d[u]&&(d[u].tot>0||d[u].acum>0));
-        if(hasUnits||true){ // aceita mesmo sem dados (semana atual pode estar vazia)
-          window.WD[String(sid)]=d;
-          if(!window.WI.includes(sid)) window.WI.push(sid);
-          updated=true;
-        }
-      }
-    });
-    if(updated){
-      window.WI.sort((a,b)=>a-b);
-      currentIdx=window.WI.indexOf(tSid);
-      if(currentIdx<0) currentIdx=window.WI.length-1;
-      render(currentIdx);
-    }
-    
-    const now2=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    ds.textContent=`SharePoint · ${now2}`;
-    ds.style.color='var(--up)';
+    updated=true;
+  }
+
+  if(data.pctAno && typeof data.pctAno==='object'){
+    Object.assign(PCT_ANO,data.pctAno);
+    updated=true;
+  }
+
+  if(data.percentualAno && typeof data.percentualAno==='object'){
+    Object.assign(PCT_ANO,data.percentualAno);
+    updated=true;
+  }
+
+  if(updated){
+    window.WI=[...new Set(window.WI.map(Number).filter(Boolean))].sort((a,b)=>a-b);
+    const tSid=getSemanaId(new Date());
+    currentIdx=window.WI.includes(tSid)?window.WI.indexOf(tSid):window.WI.length-1;
+    render(currentIdx);
+  }
+  return updated;
+}
+
+async function fetchFreshData(){
+  const ds=document.getElementById('ds');
+  ds.textContent='atualizando...';
+  ds.style.color='#D97706';
+  ds.onclick=null;
+
+  try{
+    const url=`${DATA_URL}?v=${Date.now()}`;
+    const resp=await fetch(url,{cache:'no-store'});
+    if(!resp.ok) throw new Error(`dados.json: ${resp.status}`);
+    const data=await resp.json();
+    const ok=applyDashboardData(data);
+    const stamp=data.atualizadoEm || data.updatedAt || new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+    ds.textContent=ok?`dados.json · ${stamp}`:`dados.json sem dados válidos`;
+    ds.style.color=ok?'var(--up)':'var(--warn)';
   }catch(err){
     console.error(err);
-    ds.textContent=`erro: ${err.message}`;
+    ds.textContent=`erro dados.json · ${err.message}`;
     ds.style.color='var(--down)';
-    ds.onclick=()=>alert(err.message);
+    ds.onclick=()=>alert('Erro ao carregar dados.json: '+err.message);
   }
 }
 
@@ -675,34 +649,6 @@ fetchFreshData();
 setInterval(fetchFreshData,60000);
 </script>
 
-<script>
-
-async function atualizarPainelSilencioso(){
-
-  try{
-
-    console.log("Atualizando painel...");
-
-    if(typeof carregarDados === "function"){
-      await carregarDados();
-    }
-
-    if(typeof loadData === "function"){
-      await loadData();
-    }
-
-    console.log("Painel atualizado");
-
-  }catch(e){
-
-    console.error("Erro atualização:",e);
-
-  }
-}
-
-setInterval(atualizarPainelSilencioso,60000);
-
-</script>
 
 </body>
 </html>
