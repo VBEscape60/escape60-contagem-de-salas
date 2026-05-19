@@ -616,8 +616,24 @@ async function fetchFreshData(){
     const data=await resp.json();
     const ok=applyDashboardData(data);
     const stamp=data.atualizadoEm || data.updatedAt || new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-    ds.textContent=ok?`dados.json · ${stamp}`:`dados.json sem dados válidos`;
-    ds.style.color=ok?'var(--up)':'var(--warn)';
+
+    // Quando o dados.json ainda está em modo teste/vazio, mantém os dados estáticos do painel.
+    // Isso evita mensagem de erro falsa enquanto o Power Automate/GitHub Actions ainda não alimentou o arquivo.
+    const semanasVazias=Array.isArray(data.semanas) && data.semanas.length===0;
+    const metasVazias=Array.isArray(data.metas) && data.metas.length===0;
+    const jsonTeste=String(data.status||'').toLowerCase()==='teste';
+    const jsonVazio=jsonTeste || (semanasVazias && metasVazias && !data.WD && !data.weeks);
+
+    if(ok){
+      ds.textContent=`dados.json · ${stamp}`;
+      ds.style.color='var(--up)';
+    }else if(jsonVazio){
+      ds.textContent='dados.json conectado · aguardando dados do Power Automate';
+      ds.style.color='var(--warn)';
+    }else{
+      ds.textContent='dados.json recebido · estrutura ainda não reconhecida';
+      ds.style.color='var(--warn)';
+    }
   }catch(err){
     console.error(err);
     ds.textContent=`erro dados.json · ${err.message}`;
