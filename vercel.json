@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "git diff HEAD~1 --name-only | grep -qv dados.json",
   "headers": [
     {
       "source": "/dados.json",
