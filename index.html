@@ -331,7 +331,7 @@ const UNIT_CFG=[
 
 
 function formatarDataBR(valor){
-  const opcoes={day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'};
+  const opcoes={day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false,timeZone:'America/Sao_Paulo'};
 
   if(!valor){
     return new Date().toLocaleString('pt-BR',opcoes);
@@ -688,7 +688,10 @@ async function fetchFreshData(){
     const jsonVazio=jsonTeste || (semanasVazias && metasVazias && !data.WD && !data.weeks);
 
     if(ok){
-      ds.textContent=`dados.json · ${stamp}`;
+      // Mostra o horário da última leitura bem-sucedida do app, em São Paulo.
+      // Assim o rodapé muda a cada ciclo de atualização, mesmo quando os dados do Excel ainda não mudaram.
+      const leitura=formatarDataBR();
+      ds.textContent=`Dados atualizados · ${leitura}`;
       ds.style.color='var(--up)';
     }else if(jsonVazio){
       ds.textContent='dados.json conectado · aguardando dados do Power Automate';
