@@ -485,7 +485,7 @@ function renderRecordes(){
 
   // Diário: prioridade para o recorde enviado no JSON, quando existir; fallback calculado pela soma das unidades.
   // Semanal e mensal: usa o maior entre histórico enviado e cálculo local, preservando recordes antigos.
-  const diario=fonte.diario&&fonte.diario.quantidade>0?fonte.diario:calc.diario;
+  const diario=(fonte.diario&&fonte.diario.quantidade>=calc.diario.quantidade)?fonte.diario:calc.diario;
   const semanal=(fonte.semanal&&fonte.semanal.quantidade>=calc.semanal.quantidade)?fonte.semanal:calc.semanal;
   const mensal=(fonte.mensal&&fonte.mensal.quantidade>=calc.mensal.quantidade)?fonte.mensal:calc.mensal;
 
