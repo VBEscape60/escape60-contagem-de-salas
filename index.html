@@ -6,6 +6,7 @@ import io
 import time
 import logging
 import requests
+import unicodedata
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -76,6 +77,38 @@ def normalizar(valor):
     return str(valor).strip().upper()
 
 
+def obter_campo(linha, *nomes):
+    for nome in nomes:
+        if nome in linha:
+            return linha.get(nome)
+
+    alvos = {normalizar(nome).replace("Á", "A").replace("Ã", "A") for nome in nomes}
+    for chave, valor in linha.items():
+        chave_norm = normalizar(chave).replace("Á", "A").replace("Ã", "A")
+        if chave_norm in alvos:
+            return valor
+
+    return None
+
+
+def obter_campo(linha, *nomes):
+    for nome in nomes:
+        if nome in linha:
+            return linha.get(nome)
+
+    def canonico(valor):
+        texto = unicodedata.normalize("NFD", str(valor or ""))
+        texto = "".join(ch for ch in texto if unicodedata.category(ch) != "Mn")
+        return re.sub(r"[^A-Z0-9]", "", texto.upper())
+
+    alvos = {canonico(nome) for nome in nomes}
+    for chave, valor in linha.items():
+        if canonico(chave) in alvos:
+            return valor
+
+    return None
+
+
 def valor_numero(valor):
     if valor is None:
         return 0.0
@@ -117,7 +150,7 @@ def data_pagamento(valor):
 
 
 def data_horario_jogo(linha):
-    valor = linha.get("Horário") or linha.get("Horario")
+    valor = obter_campo(linha, "Horário", "HorÃ¡rio", "Horario")
 
     if not valor:
         return None
@@ -147,7 +180,7 @@ def chave_linha(linha):
         normalizar(linha.get("Reserva")),
         normalizar(linha.get("Cliente")),
         normalizar(linha.get("Sala")),
-        normalizar(linha.get("Horário") or linha.get("Horario")),
+        normalizar(obter_campo(linha, "Horário", "HorÃ¡rio", "Horario")),
         normalizar(linha.get("Tipo")),
         normalizar(linha.get("Filial"))
     )
@@ -359,8 +392,9 @@ def definir_periodo_para_busca(arquivo_existe, arquivo_bytes):
     agora = agora_sp()
     dias_ate_domingo = (6 - agora.weekday()) % 7
     proximo_domingo = agora + timedelta(days=dias_ate_domingo)
+    linhas_existentes, _ = csv_para_linhas(arquivo_bytes) if arquivo_bytes else ([], [])
 
-    if not arquivo_existe or not arquivo_bytes:
+    if not arquivo_existe or not arquivo_bytes or len(linhas_existentes) == 0:
         inicio = datetime(agora.year, 1, 1)
         fim = proximo_domingo
         modo = "ANO_ATUAL_COMPLETO"
