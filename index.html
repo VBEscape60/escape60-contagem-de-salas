@@ -284,9 +284,9 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
 
   <div class="sec">Recordes Gerais</div>
   <div class="records">
-    <div class="rec-card"><div class="rec-val">87</div><div class="rec-lbl">Diário</div><div class="rec-sub">HS · out/22</div></div>
-    <div class="rec-card"><div class="rec-val">827</div><div class="rec-lbl">Semanal</div><div class="rec-sub">geral · abr/26</div></div>
-    <div class="rec-card"><div class="rec-val">3036</div><div class="rec-lbl">Mensal</div><div class="rec-sub">geral · ago/25</div></div>
+    <div class="rec-card"><div class="rec-val" id="rec-dia-val">—</div><div class="rec-lbl">Diário</div><div class="rec-sub" id="rec-dia-sub">geral</div></div>
+    <div class="rec-card"><div class="rec-val" id="rec-sem-val">—</div><div class="rec-lbl">Semanal</div><div class="rec-sub" id="rec-sem-sub">geral</div></div>
+    <div class="rec-card"><div class="rec-val" id="rec-mes-val">—</div><div class="rec-lbl">Mensal</div><div class="rec-sub" id="rec-mes-sub">geral</div></div>
   </div>
 
   <div class="sec">Metas Mensais · <span id="am">2026</span></div>
@@ -301,9 +301,9 @@ const DATA_URL='https://raw.githubusercontent.com/VBEscape60/escape60-contagem-d
 
 // Dados estáticos
 window.WI=[202618, 202619, 202620];
-window.WD={"202620":{"_meta":{"ini":"11/05","fim":"17/05","mes":"mai","ano":2026,"sid":202620},"HS":{"s":[4,3,1,0,0,0,0],"c":[0,0,3,0,0,0,0],"tot":8,"tot_c":3,"acum":238,"acum_c":9,"ms":181.2,"mm":802,"pct":29.7},"VO":{"s":[7,4,2,1,1,5,1],"c":[0,0,0,0,0,0,0],"tot":21,"tot_c":0,"acum":100,"acum_c":0,"ms":92.1,"mm":408,"pct":24.5},"CP":{"s":[5,1,1,4,4,10,0],"c":[0,0,0,0,0,0,0],"tot":25,"tot_c":0,"acum":104,"acum_c":0,"ms":54.0,"mm":239,"pct":43.4},"MO":{"s":[2,0,2,0,0,0,0],"c":[0,0,0,0,0,0,0],"tot":4,"tot_c":0,"acum":142,"acum_c":0,"ms":118.9,"mm":527,"pct":27.0},"TT":{"s":[5,8,0,2,7,12,1],"c":[0,0,0,0,0,0,0],"tot":35,"tot_c":0,"acum":144,"acum_c":10,"ms":79.0,"mm":350,"pct":41.2},"JD":{"s":[2,5,1,13,1,13,3],"c":[0,0,0,0,1,0,0],"tot":38,"tot_c":1,"acum":185,"acum_c":10,"ms":78.5,"mm":348,"pct":53.2}},"202619":{"_meta":{"ini":"04/05","fim":"10/05","mes":"mai","ano":2026,"sid":202619},"HS":{"s":[2,16,11,8,9,48,23],"c":[0,0,2,0,4,0,0],"tot":117,"tot_c":6,"acum":238,"acum_c":9,"ms":0,"mm":0,"pct":0},"VO":{"s":[5,6,4,3,6,15,5],"c":[0,0,0,0,0,0,0],"tot":44,"tot_c":0,"acum":100,"acum_c":0,"ms":0,"mm":0,"pct":0},"CP":{"s":[3,1,0,4,5,14,7],"c":[0,0,0,0,0,0,0],"tot":34,"tot_c":0,"acum":104,"acum_c":0,"ms":0,"mm":0,"pct":0},"MO":{"s":[3,2,4,3,16,25,12],"c":[0,0,0,0,0,0,0],"tot":65,"tot_c":0,"acum":142,"acum_c":0,"ms":0,"mm":0,"pct":0},"TT":{"s":[4,3,2,3,4,25,5],"c":[0,2,8,0,0,0,0],"tot":46,"tot_c":10,"acum":144,"acum_c":10,"ms":0,"mm":0,"pct":0},"JD":{"s":[4,3,4,3,25,24,13],"c":[0,0,14,0,2,0,0],"tot":76,"tot_c":16,"acum":185,"acum_c":10,"ms":0,"mm":0,"pct":0}},"202618":{"_meta":{"ini":"27/04","fim":"03/05","mes":"abr","ano":2026,"sid":202618},"HS":{"s":[4,15,14,5,33,45,35],"c":[0,0,20,6,0,0,0],"tot":151,"tot_c":26,"acum":238,"acum_c":9,"ms":0,"mm":0,"pct":0},"VO":{"s":[7,4,6,9,10,19,6],"c":[0,1,1,0,0,0,0],"tot":61,"tot_c":2,"acum":100,"acum_c":0,"ms":0,"mm":0,"pct":0},"CP":{"s":[8,9,1,2,17,22,6],"c":[0,0,0,0,0,0,0],"tot":65,"tot_c":0,"acum":104,"acum_c":0,"ms":0,"mm":0,"pct":0},"MO":{"s":[4,19,2,5,24,36,13],"c":[0,0,20,0,0,0,0],"tot":103,"tot_c":20,"acum":142,"acum_c":0,"ms":0,"mm":0,"pct":0},"TT":{"s":[13,9,3,4,24,24,15],"c":[2,0,0,0,0,0,0],"tot":92,"tot_c":2,"acum":144,"acum_c":10,"ms":0,"mm":0,"pct":0},"JD":{"s":[4,19,2,5,33,25,13],"c":[0,0,20,0,0,0,0],"tot":101,"tot_c":20,"acum":185,"acum_c":10,"ms":0,"mm":0,"pct":0}}};
+window.WD={"202620":{"_meta":{"ini":"11/05","fim":"17/05","mes":"mai","ano":2026,"sid":202620},"HS":{"s":[4,3,1,0,0,0,0],"c":[0,0,3,0,0,0,0],"tot":8,"tot_c":3,"acum":238,"acum_c":9,"ms":164,"mm":725,"pct":32.8},"VO":{"s":[7,4,2,1,1,5,1],"c":[0,0,0,0,0,0,0],"tot":21,"tot_c":0,"acum":100,"acum_c":0,"ms":78,"mm":346,"pct":28.9},"CP":{"s":[5,1,1,4,4,10,0],"c":[0,0,0,0,0,0,0],"tot":25,"tot_c":0,"acum":104,"acum_c":0,"ms":52,"mm":230,"pct":45.2},"MO":{"s":[2,0,2,0,0,0,0],"c":[0,0,0,0,0,0,0],"tot":4,"tot_c":0,"acum":142,"acum_c":0,"ms":112,"mm":497,"pct":28.6},"TT":{"s":[5,8,0,2,7,12,1],"c":[0,0,0,0,0,0,0],"tot":35,"tot_c":0,"acum":144,"acum_c":10,"ms":75,"mm":330,"pct":43.6},"JD":{"s":[2,5,1,13,1,13,3],"c":[0,0,0,0,1,0,0],"tot":38,"tot_c":1,"acum":185,"acum_c":10,"ms":85,"mm":375,"pct":49.3}},"202619":{"_meta":{"ini":"04/05","fim":"10/05","mes":"mai","ano":2026,"sid":202619},"HS":{"s":[2,16,11,8,9,48,23],"c":[0,0,2,0,4,0,0],"tot":117,"tot_c":6,"acum":238,"acum_c":9,"ms":0,"mm":0,"pct":0},"VO":{"s":[5,6,4,3,6,15,5],"c":[0,0,0,0,0,0,0],"tot":44,"tot_c":0,"acum":100,"acum_c":0,"ms":0,"mm":0,"pct":0},"CP":{"s":[3,1,0,4,5,14,7],"c":[0,0,0,0,0,0,0],"tot":34,"tot_c":0,"acum":104,"acum_c":0,"ms":0,"mm":0,"pct":0},"MO":{"s":[3,2,4,3,16,25,12],"c":[0,0,0,0,0,0,0],"tot":65,"tot_c":0,"acum":142,"acum_c":0,"ms":0,"mm":0,"pct":0},"TT":{"s":[4,3,2,3,4,25,5],"c":[0,2,8,0,0,0,0],"tot":46,"tot_c":10,"acum":144,"acum_c":10,"ms":0,"mm":0,"pct":0},"JD":{"s":[4,3,4,3,25,24,13],"c":[0,0,14,0,2,0,0],"tot":76,"tot_c":16,"acum":185,"acum_c":10,"ms":0,"mm":0,"pct":0}},"202618":{"_meta":{"ini":"27/04","fim":"03/05","mes":"abr","ano":2026,"sid":202618},"HS":{"s":[4,15,14,5,33,45,35],"c":[0,0,20,6,0,0,0],"tot":151,"tot_c":26,"acum":238,"acum_c":9,"ms":0,"mm":0,"pct":0},"VO":{"s":[7,4,6,9,10,19,6],"c":[0,1,1,0,0,0,0],"tot":61,"tot_c":2,"acum":100,"acum_c":0,"ms":0,"mm":0,"pct":0},"CP":{"s":[8,9,1,2,17,22,6],"c":[0,0,0,0,0,0,0],"tot":65,"tot_c":0,"acum":104,"acum_c":0,"ms":0,"mm":0,"pct":0},"MO":{"s":[4,19,2,5,24,36,13],"c":[0,0,20,0,0,0,0],"tot":103,"tot_c":20,"acum":142,"acum_c":0,"ms":0,"mm":0,"pct":0},"TT":{"s":[13,9,3,4,24,24,15],"c":[2,0,0,0,0,0,0],"tot":92,"tot_c":2,"acum":144,"acum_c":10,"ms":0,"mm":0,"pct":0},"JD":{"s":[4,19,2,5,33,25,13],"c":[0,0,20,0,0,0,0],"tot":101,"tot_c":20,"acum":185,"acum_c":10,"ms":0,"mm":0,"pct":0}}};
 const FAT={"1":{"MO":268967.55,"VO":145270.72,"HS":447511.08,"TT":199087.03,"JD":195094.52,"CP":184840.71},"2":{"MO":217858.82,"VO":139093.2,"HS":434192.23,"TT":172970.8,"JD":193174.0,"CP":159739.08},"3":{"MO":214316.12,"VO":157572.38,"HS":514355.49,"TT":229300.64,"JD":178854.7,"CP":120000.23},"4":{"MO":253917.83,"VO":129153.3,"HS":414221.69,"TT":161435.09,"JD":193659.32,"CP":111943.35},"5":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"6":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"7":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"8":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"9":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"10":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"11":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0},"12":{"MO":0,"VO":0,"HS":0,"TT":0,"JD":0,"CP":0}};
-const META={"1":{"MO":313760.0,"VO":210000.0,"HS":420000.0,"TT":197160.0,"JD":175000.0,"CP":150000.0},"2":{"MO":290440.0,"VO":200000.0,"HS":412000.0,"TT":182320.0,"JD":192000.0,"CP":125000.0},"3":{"MO":340260.0,"VO":245000.0,"HS":510000.0,"TT":214120.0,"JD":210000.0,"CP":130000.0},"4":{"MO":302100.0,"VO":230000.0,"HS":488888.89,"TT":212000.0,"JD":216000.0,"CP":140000.0},"5":{"MO":328600.0,"VO":230000.0,"HS":520000.0,"TT":209880.0,"JD":216000.0,"CP":135000.0},"6":{"MO":309520.0,"VO":210000.0,"HS":480000.0,"TT":203520.0,"JD":280000.0,"CP":160000.0},"7":{"MO":403400.0,"VO":260000.0,"HS":630000.0,"TT":233200.0,"JD":280000.0,"CP":190000.0},"8":{"MO":388420.0,"VO":280000.0,"HS":650000.0,"TT":233200.0,"JD":315000.0,"CP":195000.0},"9":{"MO":295740.0,"VO":181000.0,"HS":490000.0,"TT":201400.0,"JD":315000.0,"CP":150000.0},"10":{"MO":351920.0,"VO":229000.0,"HS":530000.0,"TT":217300.0,"JD":315000.0,"CP":170000.0},"11":{"MO":343440.0,"VO":245000.0,"HS":540000.0,"TT":220480.0,"JD":315000.0,"CP":160000.0},"12":{"MO":412340.0,"VO":300000.0,"HS":630000.0,"TT":246980.0,"JD":315000.0,"CP":170000.0}};
+const META={"1":{"MO":296000.0,"VO":200000.0,"HS":415000.0,"TT":186000.0,"JD":166250.0,"CP":145000.0},"2":{"MO":274000.0,"VO":185000.0,"HS":400000.0,"TT":172000.0,"JD":181500.0,"CP":120000.0},"3":{"MO":321000.0,"VO":230000.0,"HS":490000.0,"TT":202000.0,"JD":199500.0,"CP":120000.0},"4":{"MO":285000.0,"VO":200000.0,"HS":440000.0,"TT":200000.0,"JD":206000.0,"CP":130000.0},"5":{"MO":310000.0,"VO":195000.0,"HS":470000.0,"TT":198000.0,"JD":232750.0,"CP":130000.0},"6":{"MO":292000.0,"VO":196000.0,"HS":450000.0,"TT":192000.0,"JD":266000.0,"CP":150000.0},"7":{"MO":390000.0,"VO":230000.0,"HS":580000.0,"TT":220000.0,"JD":299250.0,"CP":180000.0},"8":{"MO":357000.0,"VO":270000.0,"HS":630000.0,"TT":220000.0,"JD":299250.0,"CP":185000.0},"9":{"MO":279000.0,"VO":220000.0,"HS":450000.0,"TT":190000.0,"JD":299250.0,"CP":140000.0},"10":{"MO":332000.0,"VO":218000.0,"HS":510000.0,"TT":205000.0,"JD":299250.0,"CP":160000.0},"11":{"MO":324000.0,"VO":236000.0,"HS":510000.0,"TT":208000.0,"JD":299250.0,"CP":150000.0},"12":{"MO":389000.0,"VO":280000.0,"HS":580000.0,"TT":233000.0,"JD":299250.0,"CP":160000.0}};
 const PCT_ANO={"HS": 30.6, "VO": 21.5, "MO": 24.8, "TT": 31.4, "JD": 25.0, "CP": 32.6};
 
 // Acompanhamento metas - será lido do SharePoint
@@ -382,6 +382,140 @@ function metaProp(mm,ano,mes,dataFim){
 }
 
 let currentIdx=0;
+
+
+function excelSerialToDate(serial){
+  const n=parseFloat(serial);
+  if(!isFinite(n)) return null;
+  const ms=Math.round((n-25569)*86400*1000);
+  const d=new Date(ms);
+  return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());
+}
+
+function fmtShortDate(d){
+  if(!(d instanceof Date)||isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'});
+}
+
+function fmtMonthYear(d){
+  if(!(d instanceof Date)||isNaN(d.getTime())) return '';
+  const meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return `${meses[d.getMonth()]}/${String(d.getFullYear()).slice(-2)}`;
+}
+
+function dateFromWeekMeta(meta,dayIndex){
+  if(!meta||!meta.ini||!meta.ano) return null;
+  const [dd,mm]=String(meta.ini).split('/').map(Number);
+  if(!dd||!mm) return null;
+  const d=new Date(Number(meta.ano),mm-1,dd);
+  d.setDate(d.getDate()+dayIndex);
+  return d;
+}
+
+function calcRecordesFromWD(){
+  const rec={
+    diario:{quantidade:0,sub:'geral'},
+    semanal:{quantidade:0,sub:'geral'},
+    mensal:{quantidade:0,sub:'geral'}
+  };
+  const monthly={};
+  if(!window.WD||typeof window.WD!=='object') return rec;
+
+  Object.keys(window.WD).forEach(sid=>{
+    const wd=window.WD[sid];
+    if(!wd||!wd._meta) return;
+    const dias=Array(7).fill(0);
+    let semanaTotal=0;
+    let mesAcumTotal=0;
+
+    UNIT_CFG.forEach(u=>{
+      const ud=normalizeUnit(wd[u.code]);
+      ud.s.forEach((v,i)=>dias[i]+=v);
+      semanaTotal+=ud.tot;
+      mesAcumTotal+=ud.acum;
+    });
+
+    dias.forEach((v,i)=>{
+      if(v>rec.diario.quantidade){
+        const d=dateFromWeekMeta(wd._meta,i);
+        rec.diario={quantidade:v,sub:d?`geral · ${fmtShortDate(d)}`:'geral'};
+      }
+    });
+
+    if(semanaTotal>rec.semanal.quantidade){
+      rec.semanal={quantidade:semanaTotal,sub:`geral · ${wd._meta.ini}–${wd._meta.fim}`};
+    }
+
+    const mKey=`${wd._meta.ano}-${wd._meta.mes}`;
+    if(!monthly[mKey]||mesAcumTotal>monthly[mKey].quantidade){
+      monthly[mKey]={quantidade:mesAcumTotal,sub:`geral · ${wd._meta.mes}/${String(wd._meta.ano).slice(-2)}`};
+    }
+  });
+
+  Object.values(monthly).forEach(m=>{
+    if(m.quantidade>rec.mensal.quantidade) rec.mensal=m;
+  });
+  return rec;
+}
+
+function normalizeRecordesFonte(src){
+  if(!src||typeof src!=='object') return null;
+  const out={};
+  ['diario','semanal','mensal'].forEach(k=>{
+    const r=src[k];
+    if(!r) return;
+    const qtd=parseInt(r.quantidade ?? r.valor ?? r.qtd ?? 0)||0;
+    let sub='geral';
+    const d=excelSerialToDate(r.periodo ?? r.data ?? r.mes);
+    if(d){
+      if(k==='diario') sub=`geral · ${fmtShortDate(d)}`;
+      else if(k==='semanal') sub=`geral · ${fmtShortDate(d)}`;
+      else sub=`geral · ${fmtMonthYear(d)}`;
+    }else if(r.sub||r.label){
+      sub=String(r.sub||r.label);
+    }
+    out[k]={quantidade:qtd,sub};
+  });
+  return out;
+}
+
+function renderRecordes(){
+  const calc=calcRecordesFromWD();
+  const fonte=normalizeRecordesFonte(window.RECORDES)||{};
+
+  // Diário: prioridade para o recorde enviado no JSON, quando existir; fallback calculado pela soma das unidades.
+  // Semanal e mensal: usa o maior entre histórico enviado e cálculo local, preservando recordes antigos.
+  const diario=fonte.diario&&fonte.diario.quantidade>0?fonte.diario:calc.diario;
+  const semanal=(fonte.semanal&&fonte.semanal.quantidade>=calc.semanal.quantidade)?fonte.semanal:calc.semanal;
+  const mensal=(fonte.mensal&&fonte.mensal.quantidade>=calc.mensal.quantidade)?fonte.mensal:calc.mensal;
+
+  const set=(vId,sId,r)=>{
+    const v=document.getElementById(vId),s=document.getElementById(sId);
+    if(v) v.textContent=r&&r.quantidade?String(r.quantidade):'—';
+    if(s) s.textContent=r&&r.sub?r.sub:'geral';
+  };
+  set('rec-dia-val','rec-dia-sub',diario);
+  set('rec-sem-val','rec-sem-sub',semanal);
+  set('rec-mes-val','rec-mes-sub',mensal);
+}
+
+function garantirSemanaAtual(){
+  const tSid=getSemanaId(new Date());
+  if(!window.WI) window.WI=[];
+  if(!window.WD) window.WD={};
+  if(window.WD[String(tSid)]) return tSid;
+
+  const now=new Date(),dow=now.getDay(),diff=dow===0?-6:1-dow;
+  const seg=new Date(now); seg.setDate(now.getDate()+diff);
+  const dom=new Date(seg); dom.setDate(seg.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const mesL=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][seg.getMonth()];
+  window.WD[String(tSid)]={_meta:{ini:fmt(seg),fim:fmt(dom),mes:mesL,ano:seg.getFullYear(),sid:tSid}};
+  UNIT_CFG.forEach(u=>{window.WD[String(tSid)][u.code]=unitDefault();});
+  if(!window.WI.includes(tSid)) window.WI.push(tSid);
+  window.WI=[...new Set(window.WI.map(Number).filter(Boolean))].sort((a,b)=>a-b);
+  return tSid;
+}
 
 function render(idx){
   if(!window.WI||!window.WD) return;
@@ -487,6 +621,8 @@ function render(idx){
   b2+=`<td class="hm-td-pct-g"><span class="pv ${pgCls}">${pgFalta}%</span><br><span style="font-size:.5rem;color:var(--muted);font-weight:600">falta</span><br><span style="font-size:.55rem;color:var(--muted);font-weight:600">Geral</span></td>`;
   b2+='</tr></tbody>';
   hm.innerHTML=h+b2;
+
+  renderRecordes();
 
   document.getElementById('ft').innerHTML=
     formatarDataBR()
@@ -657,9 +793,14 @@ function applyDashboardData(data){
     updated=true;
   }
 
+  if(data.recordes && typeof data.recordes==='object'){
+    window.RECORDES=data.recordes;
+    updated=true;
+  }
+
   if(updated){
     window.WI=[...new Set(window.WI.map(Number).filter(Boolean))].sort((a,b)=>a-b);
-    const tSid=getSemanaId(new Date());
+    const tSid=garantirSemanaAtual();
     currentIdx=window.WI.includes(tSid)?window.WI.indexOf(tSid):window.WI.length-1;
     render(currentIdx);
   }
@@ -710,16 +851,7 @@ document.getElementById('btn-prev').onclick=()=>{if(currentIdx>0){currentIdx--;r
 document.getElementById('btn-next').onclick=()=>{if(currentIdx<window.WI.length-1){currentIdx++;render(currentIdx);}};
 
 // Init
-const tSid=getSemanaId(new Date());
-if(!window.WI.includes(tSid)){
-  window.WI=[...window.WI,tSid].sort((a,b)=>a-b);
-  const now=new Date(),dow=now.getDay(),diff=dow===0?-6:1-dow;
-  const seg=new Date(now); seg.setDate(now.getDate()+diff);
-  const dom=new Date(seg); dom.setDate(seg.getDate()+6);
-  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
-  const mesL=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][seg.getMonth()];
-  window.WD[String(tSid)]={_meta:{ini:fmt(seg),fim:fmt(dom),mes:mesL,ano:seg.getFullYear(),sid:tSid}};
-}
+const tSid=garantirSemanaAtual();
 currentIdx=window.WI.indexOf(tSid);
 if(currentIdx<0) currentIdx=window.WI.length-1;
 document.getElementById('lo').style.display='none';
