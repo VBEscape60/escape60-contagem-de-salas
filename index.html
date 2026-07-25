@@ -297,7 +297,7 @@ footer{text-align:center;margin-top:8px;font-size:.62rem;color:var(--sub);font-w
 </div>
 
 <script>
-const DATA_URL='https://raw.githubusercontent.com/VBEscape60/escape60-contagem-de-salas/main/dados.json';
+const DATA_URL='https://api.github.com/repos/VBEscape60/escape60-contagem-de-salas/contents/dados.json?ref=main';
 
 // Dados estáticos
 window.WI=[202618, 202619, 202620];
@@ -845,8 +845,8 @@ async function fetchFreshData(){
   ds.onclick=null;
 
   try{
-    const url=`${DATA_URL}?v=${Date.now()}`;
-    const resp=await fetch(url,{cache:'no-store'});
+    const url=`${DATA_URL}&v=${Date.now()}`;
+    const resp=await fetch(url,{cache:'no-store',headers:{Accept:'application/vnd.github.raw'}});
     if(!resp.ok) throw new Error(`dados.json: ${resp.status}`);
     const data=await resp.json();
     const ok=applyDashboardData(data);
