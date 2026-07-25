@@ -768,7 +768,7 @@ function normalizeSemana(item){
 function corrigirJoinhasConhecidos(){
   const meses=METAS_ACMP[2026];
   if(!Array.isArray(meses)) return;
-  const cp2026={2:1,4:1}; // Mar. e Mai. confirmados por faturamento x meta minima.
+  const cp2026={2:1,4:1}; // Hotfix CP 2026: Mar. e Mai. batem a meta minima confirmada.
   Object.entries(cp2026).forEach(([idx,v])=>{
     const row=meses[Number(idx)];
     if(row) row.CP=v;
