@@ -765,6 +765,16 @@ function normalizeSemana(item){
   return {semId:sid,result};
 }
 
+function corrigirJoinhasConhecidos(){
+  const meses=METAS_ACMP[2026];
+  if(!Array.isArray(meses)) return;
+  const cp2026={2:1,4:1}; // Mar. e Mai. confirmados por faturamento x meta minima.
+  Object.entries(cp2026).forEach(([idx,v])=>{
+    const row=meses[Number(idx)];
+    if(row) row.CP=v;
+  });
+}
+
 function applyDashboardData(data){
   if(!data || typeof data!=='object') return false;
   let updated=false;
@@ -819,6 +829,7 @@ function applyDashboardData(data){
   }
 
   if(updated){
+    corrigirJoinhasConhecidos();
     window.WI=[...new Set(window.WI.map(Number).filter(Boolean))].sort((a,b)=>a-b);
     const tSid=garantirSemanaAtual();
     currentIdx=window.WI.includes(tSid)?window.WI.indexOf(tSid):window.WI.length-1;
